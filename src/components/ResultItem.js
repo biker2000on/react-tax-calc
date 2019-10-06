@@ -12,7 +12,7 @@ function ResultItem({ result, title }) {
   const classes = useStyles()
 
   return (
-    <Grid item xs={4}>
+    <Grid item sm={4}>
       <Paper className={classes.root}>
         <Typography variant="body2">{title}</Typography>
         <Typography variant="h4">${result}</Typography>

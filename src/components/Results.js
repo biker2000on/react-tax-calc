@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Grid } from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
 import totalizer from "../utilities/totalizer";
 import ResultItem from "./ResultItem";
 import { medicare_rates, social_security_rates } from "../utilities/taxes";
 import { initializeFields } from "../utilities/initializeFields";
 import { results_fields } from "../utilities/fields";
-
 
 const bracketMap = {
   0: "single",
@@ -19,16 +18,16 @@ const calcSSTax = (income, rates) => {
   if (income < rates.maximum) {
     return parseInt((income * rates.employee_rate) / 100);
   }
-  return parseInt(rates.maximum * rates.employee_rate / 100);
+  return parseInt((rates.maximum * rates.employee_rate) / 100);
 };
 
 const calcMedicareTax = (income, rates) => {
-  let tax = income * rates.employee_rate / 100
+  let tax = (income * rates.employee_rate) / 100;
   if (income > rates.additional_bracket) {
-    tax += (income - rates.additional_bracket) * rates.additional_rate / 100
+    tax += ((income - rates.additional_bracket) * rates.additional_rate) / 100;
   }
-  return parseInt(tax)
-}
+  return parseInt(tax);
+};
 
 function Results({ income, deductions, brackets, status, pes, year }) {
   const [results, setResults] = useState({});
@@ -63,7 +62,7 @@ function Results({ income, deductions, brackets, status, pes, year }) {
       const federalIncomeTax =
         bracket.amount +
         ((taxableNoLTGains - bracket.bracket) * bracket.marginal_rate) / 100;
-  
+
       function getCapitalGainsTax(brackets, gains, taxable) {
         let possibleBrackets = usedBracket.income_tax_brackets.slice(
           brackets["gains"]
@@ -73,7 +72,8 @@ function Results({ income, deductions, brackets, status, pes, year }) {
         let gainsInBracket = 0;
         while (gains > 0) {
           if (i < possibleBrackets.length - 2) {
-            gainsInBracket = possibleBrackets[i + 1].bracket - (taxable - gains);
+            gainsInBracket =
+              possibleBrackets[i + 1].bracket - (taxable - gains);
           } else {
             gainsInBracket = gains;
           }
@@ -90,10 +90,16 @@ function Results({ income, deductions, brackets, status, pes, year }) {
         AGI - AGInoLTGains,
         defaultToZero(taxable)
       );
-      const ss = calcSSTax(income.salary + income.bonuses, social_security_rates[year])
-      const medicare = calcMedicareTax(income.salary + income.bonuses, medicare_rates[year])
+      const ss = calcSSTax(
+        income.salary + income.bonuses,
+        social_security_rates[year]
+      );
+      const medicare = calcMedicareTax(
+        income.salary + income.bonuses,
+        medicare_rates[year]
+      );
       const totalTax = ss + medicare + federalIncomeTax + capitalGainTax;
-  
+
       setResults({
         "Total Income": totalIncome,
         "Total Deductions": totalDeductions,
@@ -113,16 +119,21 @@ function Results({ income, deductions, brackets, status, pes, year }) {
         "Total Tax": totalTax
       });
     } catch (error) {
-      setResults(initializeFields(results_fields))
+      setResults(initializeFields(results_fields));
     }
   }, [income, deductions, brackets, pes, status, year]);
 
   return (
-    <Grid container spacing={5} justify="center" alignItems="stretch">
-      {Object.keys(results).map((c, i) => (
-        <ResultItem title={c} result={results[c]} key={i}></ResultItem>
-      ))}
-    </Grid>
+    <>
+      <Typography variant="h4" gutterBottom align="center">
+        Results
+      </Typography>
+      <Grid container spacing={5} justify="center" alignItems="stretch">
+        {Object.keys(results).map((c, i) => (
+          <ResultItem title={c} result={results[c]} key={i}></ResultItem>
+        ))}
+      </Grid>
+    </>
   );
 }
 
