@@ -1,30 +1,30 @@
 import React from "react";
 import { Grid, Typography, TextField } from "@material-ui/core";
-import totalizer from '../utilities/totalizer'
+import totalizer from "../utilities/totalizer";
+import { FormField, TextInput, Paragraph, Form } from "grommet";
 
-function Inputs({items, handleChange, title}) {
+function Inputs({ items, handleChange, title }) {
   // left off here CHECK ME OUT!!!!!!!!!!!!!!!!
   return (
-    <form>
-      <Typography variant="h4" gutterBottom align="center">
+    <>
+      <Paragraph color="brand" fill margin="medium" size="large">
         {title}
-      </Typography>
-      <Grid container spacing={3}>
+      </Paragraph>
+      <Form>
         {Object.keys(items).map((item, i) => (
-          <Grid item xs={12} md={6} key={i}>
-            <TextField
-              id={title + '-' + i}
-              label={item}
+          <FormField label={item} margin="medium" key={i}>
+            <TextInput
               value={items[item]}
               onChange={handleChange(item)}
-              margin="normal"
-              fullWidth
-            />
-          </Grid>
+              size='large'
+            ></TextInput>
+          </FormField>
         ))}
-      </Grid>
-      <Typography variant="h3" align="center">${totalizer(items)}</Typography>
-    </form>
+      </Form>
+      <Paragraph color="brand" fill margin="medium" size="large">
+        ${totalizer(items)}
+      </Paragraph>
+    </>
   );
 }
 

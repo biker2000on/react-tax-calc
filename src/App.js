@@ -6,12 +6,10 @@ import {
   Stepper,
   StepLabel,
   Container,
-  Button,
-  Grid,
+  // Button,
   Typography,
   Paper,
-  makeStyles,
-  Box
+  makeStyles
 } from "@material-ui/core";
 import { ChevronLeft, MenuRounded, ChevronRight } from "@material-ui/icons";
 import Inputs from "./components/Inputs";
@@ -24,17 +22,28 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { income_fields, deductions_fields } from "./utilities/fields";
 import { ThemeProvider } from "@material-ui/styles";
 import { Root, Header, Nav, Content, Footer, presets } from "mui-layout";
-import NavigationContent from './components/NavigationContent'
+import NavigationContent from "./components/NavigationContent";
 import { green, purple } from "@material-ui/core/colors";
+import {
+  Box,
+  Button,
+  Collapsible,
+  Grid,
+  Grommet,
+  Heading,
+  Layer,
+  ResponsiveContext
+} from "grommet";
+import { FormClose, Notification } from "grommet-icons";
 
 const theme = createMuiTheme({
   palette: {
     primary: purple,
-    secondary: green,
+    secondary: green
   },
   status: {
-    danger: 'orange',
-  },
+    danger: "orange"
+  }
 });
 const config = presets.createStandardLayout();
 const useStyles = makeStyles(theme => ({
@@ -43,7 +52,22 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const AppBar = props => (
+  <Box
+    tag="header"
+    direction="row"
+    align="center"
+    justify="between"
+    background="brand"
+    pad={{ left: "medium", right: "small", vertical: "small" }}
+    elevation="medium"
+    style={{ zIndex: "1" }}
+    {...props}
+  />
+);
+
 const App = () => {
+  const [showSidebar, setShowSidebar] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [status, setStatus] = useState(0);
   const [year, setYear] = useState(new Date().getFullYear());
@@ -123,7 +147,7 @@ const App = () => {
   };
 
   const steps = ["Filing Status", "Income", "Deductions", "Results"];
-  
+
   let filingStatus = (
     <FilingStatus
       year={year}
@@ -176,90 +200,124 @@ const App = () => {
 
   return (
     <Router>
-      <ThemeProvider theme={theme}>
-        <Root config={config}>
-          <Header
-            renderMenuIcon={open => (open ? <ChevronLeft /> : <MenuRounded />)}
-          >
-            React Tax Calculator
-          </Header>
-          <Nav
-            renderIcon={collapsed =>
-              collapsed ? <ChevronRight /> : <ChevronLeft />
-            }
-          >
-            <NavigationContent></NavigationContent>
-          </Nav>
-          <Content>
-            <Switch>
-              <Route path="/dashboard">
-                <Container>
-                  <Box my={2}>
-                    <Grid container spacing={3} justify="center">
-                      <Grid item md={4}>
-                        <Paper className={classes.paper}>
-                          {filingStatus}
-                        </Paper>
-                      </Grid>
-                      <Grid item md={4}>
-                        <Paper className={classes.paper}>
-                          {incomeComp}
-                        </Paper>
-                      </Grid>
-                      <Grid item md={4}>
-                        <Paper className={classes.paper}>
-                          {deductionsComp}
-                        </Paper>
-                      </Grid>
-                      <Grid item md={12}>
-                        <Paper className={classes.paper}>
-                          {resultsComp}
-                        </Paper>
-                      </Grid>
-                    </Grid>
-                  </Box>
-                </Container>
-              </Route>
-              <Route path="/">
-                <Container maxWidth="md">
-                  <Box my={2}>
-                    <Grid container spacing={3} justify="center">
-                      <Grid item xs={12}>
-                        <Stepper activeStep={activeStep} alternativeLabel>
-                          {steps.map(label => (
-                            <Step key={label}>
-                              <StepLabel>{label}</StepLabel>
-                            </Step>
-                          ))}
-                        </Stepper>
-                      </Grid>
-                      <Grid item xs={12}>
-                        {getStepContent(activeStep)}
-                      </Grid>
-                      <Grid item>
-                        <Button
-                          disabled={activeStep === 0}
-                          onClick={handleBack}
-                        >
-                          Back
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={handleNext}
-                          disabled={activeStep === steps.length}
-                        >
-                          {activeStep === steps.length - 1 ? "Finish" : "Next"}
-                        </Button>
-                      </Grid>
-                    </Grid>
-                  </Box>
-                </Container>
-              </Route>
-            </Switch>
-          </Content>
-        </Root>
-      </ThemeProvider>
+      <Grommet plain full>
+        <ResponsiveContext.Consumer>
+          {size => (
+            <Box fill>
+              <AppBar>
+                <Heading level="3" margin="none">
+                  Hello Grommet!!
+                </Heading>
+                <Button
+                  icon={<Notification />}
+                  onClick={() => {
+                    setShowSidebar(!showSidebar);
+                  }}
+                />
+              </AppBar>
+              <Box direction="row" flex overflow={{ horizontal: "hidden" }}>
+                {!showSidebar || size !== "small" ? (
+                  <Collapsible direction="horizontal" open={showSidebar}>
+                    <Box
+                      flex
+                      width="medium"
+                      background="light-2"
+                      elevation="small"
+                      align="center"
+                      justify="center"
+                    >
+                      <NavigationContent></NavigationContent>
+                    </Box>
+                  </Collapsible>
+                ) : (
+                  <Layer>
+                    <Box
+                      fill
+                      background="light-2"
+                      align="center"
+                      justify="center"
+                    >
+                      <Button
+                        icon={<FormClose />}
+                        onClick={() => setShowSidebar(false)}
+                      />
+                    </Box>
+                  </Layer>
+                )}
+                <Box flex align="center" justify="center">
+                  <Switch>
+                    <Route path="/dashboard">
+                      <Container>
+                        <Box my={2}>
+                          <Grid container spacing={3} justify="center">
+                            <Grid item md={4}>
+                              <Paper className={classes.paper}>
+                                {filingStatus}
+                              </Paper>
+                            </Grid>
+                            <Grid item md={4}>
+                              <Paper className={classes.paper}>
+                                {incomeComp}
+                              </Paper>
+                            </Grid>
+                            <Grid item md={4}>
+                              <Paper className={classes.paper}>
+                                {deductionsComp}
+                              </Paper>
+                            </Grid>
+                            <Grid item md={12}>
+                              <Paper className={classes.paper}>
+                                {resultsComp}
+                              </Paper>
+                            </Grid>
+                          </Grid>
+                        </Box>
+                      </Container>
+                    </Route>
+                    <Route path="/">
+                      <Container maxWidth="md">
+                        <Box my={2}>
+                          <Grid container spacing={3} justify="center">
+                            <Grid item xs={12}>
+                              <Stepper activeStep={activeStep} alternativeLabel>
+                                {steps.map(label => (
+                                  <Step key={label}>
+                                    <StepLabel>{label}</StepLabel>
+                                  </Step>
+                                ))}
+                              </Stepper>
+                            </Grid>
+                            <Grid item xs={12}>
+                              {getStepContent(activeStep)}
+                            </Grid>
+                            <Grid item>
+                              <Button
+                                onClick={handleBack}
+                                label="Back"
+                              ></Button>
+                              <Button
+                                color="brand"
+                                onClick={handleNext}
+                                disabled={activeStep === steps.length}
+                                label={
+                                  activeStep === steps.length - 1
+                                    ? "Finish"
+                                    : "Next"
+                                }
+                                fill
+                              ></Button>
+                            </Grid>
+                          </Grid>
+                        </Box>
+                      </Container>
+                    </Route>
+                  </Switch>
+                </Box>
+              </Box>
+            </Box>
+          )}
+        </ResponsiveContext.Consumer>
+      </Grommet>
     </Router>
   );
 };
