@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Grid } from "@material-ui/core";
+import { Grid } from "semantic-ui-react";
 import totalizer from "../utilities/totalizer";
-import ResultItem from "./ResultItem";
 import { medicare_rates, social_security_rates } from "../utilities/taxes";
 import { initializeFields } from "../utilities/initializeFields";
 import { results_fields } from "../utilities/fields";
+import { groupGridFields } from "../utilities/groupFields";
 
 
 const bracketMap = {
@@ -118,10 +118,8 @@ function Results({ income, deductions, brackets, status, pes, year }) {
   }, [income, deductions, brackets, pes, status, year]);
 
   return (
-    <Grid container spacing={5} justify="center" alignItems="stretch">
-      {Object.keys(results).map((c, i) => (
-        <ResultItem title={c} result={results[c]} key={i}></ResultItem>
-      ))}
+    <Grid container spacing={5} justify="center" alignItems="center" stackable>
+      {groupGridFields(results, 3)}
     </Grid>
   );
 }

@@ -1,20 +1,11 @@
 import React, { useState, useEffect } from "react";
-// import './App.scss';
-import {
-  Step,
-  Stepper,
-  StepLabel,
-  Container,
-  Button,
-  Grid,
-  Typography
-} from "@material-ui/core";
 import Inputs from "./components/Inputs";
 import FilingStatus from "./components/FilingStatus";
 import Results from "./components/Results";
 import { hot } from "react-hot-loader";
 import axios from "axios";
-import { initializeFields } from './utilities/initializeFields'
+import { initializeFields } from "./utilities/initializeFields";
+import { Grid, Step, Icon, Segment, Button } from "semantic-ui-react";
 
 const incomeinputs = [
   "salary",
@@ -51,45 +42,15 @@ const App = function() {
   function getStepContent(index) {
     switch (index) {
       case 0:
-        return (
-          <FilingStatus
-            year={year}
-            handleYearChange={handleYearChange}
-            status={status}
-            handleStatusChange={handleStatusChange}
-            pes={pes}
-            handlePEChange={handlePEChange}
-          ></FilingStatus>
-        );
+        return filingStatus;
       case 1:
-        return (
-          <Inputs
-            items={income}
-            handleChange={handleInputChange("income")}
-            title="Income"
-          ></Inputs>
-        );
+        return incomeComp;
       case 2:
-        return (
-          <Inputs
-            items={deductions}
-            handleChange={handleInputChange("deductions")}
-            title="Deductions"
-          ></Inputs>
-        );
+        return deductionComp;
       case 3:
-        return (
-          <Results
-            income={income}
-            deductions={deductions}
-            brackets={federalBrackets[year]}
-            status={status}
-            pes={pes}
-            year={year}
-          ></Results>
-        );
+        return resultsComp;
       default:
-        return <Typography variant="h4">All Done!</Typography>;
+        return <h2>All Done!</h2>;
     }
   }
 
@@ -114,7 +75,10 @@ const App = function() {
           });
           console.log("Tax Rates", year, taxRates.data);
         } catch (error) {
-          console.log('Without the tax rates returned, the results will fail calculation', error);
+          console.log(
+            "Without the tax rates returned, the results will fail calculation",
+            error
+          );
         }
         return;
       })();
@@ -122,16 +86,16 @@ const App = function() {
     [year]
   );
 
-  const handleStatusChange = event => {
-    setStatus(event.target.value);
+  const handleStatusChange = (event, { value }) => {
+    setStatus(value);
   };
 
-  const handleYearChange = event => {
-    setYear(event.target.value);
+  const handleYearChange = (event, { value }) => {
+    setYear(value);
   };
 
-  const handlePEChange = event => {
-    setPEs(event.target.value);
+  const handlePEChange = (event, { value }) => {
+    setPEs(value);
   };
 
   const handleBack = () => {
@@ -145,7 +109,7 @@ const App = function() {
     if (type === "income") {
       setIncome({
         ...income,
-        [name]: parseInt(event.target.value)
+        [name]: parseInt(event.target.value ? event.target.value : 0)
       });
     }
     if (type === "deductions") {
@@ -156,36 +120,76 @@ const App = function() {
     }
   };
 
+  const filingStatus = (
+    <FilingStatus
+      year={year}
+      handleYearChange={handleYearChange}
+      status={status}
+      handleStatusChange={handleStatusChange}
+      pes={pes}
+      handlePEChange={handlePEChange}
+    ></FilingStatus>
+  );
+
+  const incomeComp = (
+    <Inputs
+      items={income}
+      handleChange={handleInputChange("income")}
+      title="Income"
+    ></Inputs>
+  );
+
+  const deductionComp = (
+    <Inputs
+      items={deductions}
+      handleChange={handleInputChange("deductions")}
+      title="Deductions"
+    ></Inputs>
+  );
+
+  const resultsComp = (
+    <Results
+      income={income}
+      deductions={deductions}
+      brackets={federalBrackets[year]}
+      status={status}
+      pes={pes}
+      year={year}
+    ></Results>
+  );
+
   return (
-    <Container maxWidth="md">
-      <Grid container spacing={3} justify="center">
-        <Grid item xs={12}>
-          <Stepper activeStep={activeStep} alternativeLabel>
-            {steps.map(label => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-        </Grid>
-        <Grid item xs={12}>
-          {getStepContent(activeStep)}
-        </Grid>
-        <Grid item>
+    <>
+      <Step.Group attached="top">
+        {steps.map((item, i) => (
+          <Step key={item} active={i == activeStep}>
+            <Icon name="payment"></Icon>
+            <Step.Content>
+              <Step.Title>{item}</Step.Title>
+              <Step.Description>Hello from description</Step.Description>
+            </Step.Content>
+          </Step>
+        ))}
+      </Step.Group>
+      <Grid className="segment ui attached" centered>
+        {getStepContent(activeStep)}
+      </Grid>
+      <Grid className="segment attached centered">
+        <Button.Group>
           <Button disabled={activeStep === 0} onClick={handleBack}>
             Back
           </Button>
+          <Button.Or />
           <Button
-            variant="contained"
-            color="primary"
+            positive
             onClick={handleNext}
-            disabled={activeStep === steps.length}
+            disabled={activeStep >= steps.length}
           >
-            {activeStep === steps.length - 1 ? "Finish" : "Next"}
+            {activeStep >= steps.length - 1 ? "Finish" : "Next"}
           </Button>
-        </Grid>
+        </Button.Group>
       </Grid>
-    </Container>
+    </>
   );
 };
 
