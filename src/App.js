@@ -5,7 +5,7 @@ import Results from "./components/Results";
 import { hot } from "react-hot-loader";
 import axios from "axios";
 import { initializeFields } from "./utilities/initializeFields";
-import { Grid, Step, Icon, Segment, Button } from "semantic-ui-react";
+import { Grid, Step, Icon, Menu, Button, Container } from "semantic-ui-react";
 
 const incomeinputs = [
   "salary",
@@ -160,35 +160,40 @@ const App = function() {
 
   return (
     <>
-      <Step.Group attached="top">
-        {steps.map((item, i) => (
-          <Step key={item} active={i == activeStep}>
-            <Icon name="payment"></Icon>
-            <Step.Content>
-              <Step.Title>{item}</Step.Title>
-              <Step.Description>Hello from description</Step.Description>
-            </Step.Content>
-          </Step>
-        ))}
-      </Step.Group>
-      <Grid className="segment ui attached" centered>
-        {getStepContent(activeStep)}
-      </Grid>
-      <Grid className="segment attached centered">
-        <Button.Group>
-          <Button disabled={activeStep === 0} onClick={handleBack}>
-            Back
-          </Button>
-          <Button.Or />
-          <Button
-            positive
-            onClick={handleNext}
-            disabled={activeStep >= steps.length}
-          >
-            {activeStep >= steps.length - 1 ? "Finish" : "Next"}
-          </Button>
-        </Button.Group>
-      </Grid>
+      <Menu fixed="top" inverted color="violet" size='massive'>
+        <Menu.Item header>React Tax Calculator</Menu.Item>
+      </Menu>
+      <Container style={{ marginTop: "6em" }}>
+        <Step.Group attached="top">
+          {steps.map((item, i) => (
+            <Step key={item} active={i == activeStep}>
+              <Icon name="payment"></Icon>
+              <Step.Content>
+                <Step.Title>{item}</Step.Title>
+                <Step.Description>Hello from description</Step.Description>
+              </Step.Content>
+            </Step>
+          ))}
+        </Step.Group>
+        <Grid className="segment ui attached" centered>
+          {getStepContent(activeStep)}
+        </Grid>
+        <Grid className="segment attached centered">
+          <Button.Group>
+            <Button disabled={activeStep === 0} onClick={handleBack}>
+              Back
+            </Button>
+            <Button.Or />
+            <Button
+              positive
+              onClick={handleNext}
+              disabled={activeStep >= steps.length}
+            >
+              {activeStep >= steps.length - 1 ? "Finish" : "Next"}
+            </Button>
+          </Button.Group>
+        </Grid>
+      </Container>
     </>
   );
 };
